@@ -75,7 +75,7 @@ Biome$set("public", "registerStaticFileArtifact", function(name, path, readFun=r
                         create=noop,
                         retrieve=function() readFun(path, ...),
                         checkTime=function() file.mtime(path),
-                        store=noop)
+                        store=function(object) stop("Can't write '", name, "', it was declared as static"))
 })
 
 ##' Register a function that produces an artifact
