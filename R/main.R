@@ -3,6 +3,7 @@
 Biome <- R6Class(
   "Biome",
   private = list(
+    fileRoot = ".",
     deps = list(),
     create = list(),
     retrieve = list(),
@@ -11,6 +12,10 @@ Biome <- R6Class(
     memCache = list()
   )
 )
+
+Biome$set("public", "setRoot", function(dir) {
+  private$fileRoot <- dir
+})
 
 noop <- function(...){}
 
