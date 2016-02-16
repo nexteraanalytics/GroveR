@@ -85,6 +85,7 @@ Biome$set("public", "registerStaticFileArtifact", function(name, path, readFun=r
 ##'
 Biome$set("public", "registerFunction", function(func, funcBody=func, funcName=deparse(substitute(func)),
                                                  path=paste0(funcName, ".rds")) {
+  stopifnot(inherits(funcBody, "function"))
   funcArgs <- names(formals(funcBody))
   self$registerRDSArtifact(funcName, funcArgs, funcBody, paste0(funcName, ".rds"))
 })
