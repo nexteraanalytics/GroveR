@@ -6,5 +6,5 @@ Authors@R: person("First", "Last", email = "first.last@example.com", role = c("a
 Description: More about what it does (maybe more than one line)
 License: What license is it under?
 LazyData: TRUE
-Imports: R6
+Imports: R6, igraph
 Suggests: testthat

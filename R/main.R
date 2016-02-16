@@ -129,3 +129,7 @@ Biome$set("public", "assertArtifactRegistered", function(name) {
 Biome$set("public", "listArtifacts", function(name) {
   names(private$deps)
 })
+
+Biome$set("public", "getDependencyGraph", function() {
+  ## TODO return igraph object
+})
