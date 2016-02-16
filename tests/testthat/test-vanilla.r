@@ -41,3 +41,6 @@ res <- SolarOPADeps$getArtifact('long.term.projections')
 testthat::expect_equal(res$g, 7)
 testthat::expect_equal(res$s, 9)
 testthat::expect_equal(res$i, 4)
+
+## Catch non-functions early
+expect_error(SolarOPADeps$registerFunction(foo, "bar"), "function.*not TRUE")

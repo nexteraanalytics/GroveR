@@ -78,11 +78,6 @@ Grove$set("public", "registerStaticFileArtifact", function(name, path, readFun=r
                         store=function(object) stop("Can't write '", name, "', it was declared as static"))
 })
 
-##' Register a function that produces an artifact
-##'
-##' @usage
-##' App <- Grove$new()
-##'
 Grove$set("public", "registerFunction", function(func, funcBody=func, funcName=deparse(substitute(func)),
                                                  path=paste0(funcName, ".rds")) {
   stopifnot(inherits(funcBody, "function"))
@@ -90,6 +85,31 @@ Grove$set("public", "registerFunction", function(func, funcBody=func, funcName=d
   self$registerRDSArtifact(funcName, funcArgs, funcBody, paste0(funcName, ".rds"))
 })
 
+##' Register a do-what-I-mean artifact
+##'
+##' Register a function, or data item, as an artifact.
+##'
+##' @examples
+##' App <- Grove$new()
+##' `%auto%` <- App$auto
+##'
+##' ## 'thingy' depends on 'dep1' and 'dep2'
+##' thingy %auto% function(dep1, dep2) {
+##'   rbind(dep1, dep2) # Or whatever
+##' }
+##'
+##' @name set
+Grove$set("public", "auto", function(what, how=what, name=deparse(substitute(what))) {
+  if(inherits(how, "function")) {
+    self$registerFunction(funcName=name, funcBody=how)
+  } else {
+    self$registerRDSArtifact(name,
+                             deps=c(),
+                             create=function() how,
+                             path=paste0(name, ".rds"))
+  }
+
+})
 
 
 Grove$set("public", "getArtifact", function(name) {
