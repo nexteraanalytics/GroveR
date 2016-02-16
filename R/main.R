@@ -32,7 +32,7 @@ match.extr <- function(parse, i) {
 
 ## TODO - don't memCache everything?
 Biome$set("public", "registerArtifact", function(name, deps, create, retrieve, checkTime, store) {
-  if (missing(deps))
+  if (missing(deps) || is.null(deps))
     deps <- character()
   if (name %in% names(private$deps))
     stop("'", name, "' is already a registered artifact")
@@ -78,10 +78,15 @@ Biome$set("public", "registerStaticFileArtifact", function(name, path, readFun=r
                         store=noop)
 })
 
-Biome$set("public", "registerFunction", function(func, funcName=deparse(substitute(func)),
-                                                 funcBody=func, path=paste0(funcName, ".rds")) {
+##' Register a function that produces an artifact
+##'
+##' @usage
+##' App <- Biome$new()
+##'
+Biome$set("public", "registerFunction", function(func, funcBody=func, funcName=deparse(substitute(func)),
+                                                 path=paste0(funcName, ".rds")) {
   funcArgs <- names(formals(funcBody))
-  registerRDSArtifact(funcName, funcArgs, funcBody, paste0(funcName, ".rds"))
+  self$registerRDSArtifact(funcName, funcArgs, funcBody, paste0(funcName, ".rds"))
 })
 
 

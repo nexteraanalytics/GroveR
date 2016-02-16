@@ -1,9 +1,9 @@
-context("R interfaces")
+context("Auto interfaces")
 
 SolarOPADeps <- Biome$new()
 SolarOPADeps$setRoot('foo/bar')
 
-`%auto%` <- SolarOpaApp$registerFunction
+`%auto%` <- SolarOPADeps$registerFunction
 
 long.term.projections %auto% function(geomodel.data, scada.met.clearsky.data, inverter.met.info) {
   list(g=length(geomodel.data),
@@ -12,8 +12,13 @@ long.term.projections %auto% function(geomodel.data, scada.met.clearsky.data, in
 }
 
 geomodel.data %auto% function() 1:7
-scada.met.clearsky.data %auto% readRDS("foo/bar/scada.met.clearsky.data.rds")
-inverter.met.info %auto% readRDS("foo/bar/inverter.met.info.rds")
+scada.met.clearsky.data %auto% function() readRDS("foo/bar/scada.met.clearsky.data.rds")
+inverter.met.info %auto% function() readRDS("foo/bar/inverter.met.info.rds")
+
+registered <- SolarOPADeps$listArtifacts()
+expect_equal(sort(registered), c("geomodel.data", "inverter.met.info",
+                                 "long.term.projections", "scada.met.clearsky.data"))
+
 
 if(!dir.exists('foo/bar'))
   dir.create('foo/bar', recursive = TRUE)
