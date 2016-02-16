@@ -1,7 +1,7 @@
 ##' @importFrom R6 R6Class
 
-Biome <- R6Class(
-  "Biome",
+Grove <- R6Class(
+  "Grove",
   private = list(
     fileRoot = ".",
     deps = list(),
@@ -13,7 +13,7 @@ Biome <- R6Class(
   )
 )
 
-Biome$set("public", "setRoot", function(dir) {
+Grove$set("public", "setRoot", function(dir) {
   private$fileRoot <- dir
 })
 
@@ -31,7 +31,7 @@ match.extr <- function(parse, i) {
 }
 
 ## TODO - don't memCache everything?
-Biome$set("public", "registerArtifact", function(name, deps, create, retrieve, checkTime, store) {
+Grove$set("public", "registerArtifact", function(name, deps, create, retrieve, checkTime, store) {
   if (missing(deps) || is.null(deps))
     deps <- character()
   if (name %in% names(private$deps))
@@ -44,7 +44,7 @@ Biome$set("public", "registerArtifact", function(name, deps, create, retrieve, c
   invisible()
 })
 
-Biome$set("public", "registerRDSArtifact", function(name, deps, create, path) {
+Grove$set("public", "registerRDSArtifact", function(name, deps, create, path) {
   self$registerArtifact(name,
                         deps,
                         create,
@@ -57,7 +57,7 @@ Biome$set("public", "registerRDSArtifact", function(name, deps, create, path) {
                         })
 })
 
-Biome$set("public", "registerCSVArtifact", function(name, deps, create, path, readFun=read.csv, writeFun=write.csv, ...) {
+Grove$set("public", "registerCSVArtifact", function(name, deps, create, path, readFun=read.csv, writeFun=write.csv, ...) {
   self$registerArtifact(name,
                         deps,
                         create,
@@ -70,7 +70,7 @@ Biome$set("public", "registerCSVArtifact", function(name, deps, create, path, re
                         })
 })
 
-Biome$set("public", "registerStaticFileArtifact", function(name, path, readFun=readRDS, ...) {
+Grove$set("public", "registerStaticFileArtifact", function(name, path, readFun=readRDS, ...) {
   self$registerArtifact(name,
                         create=noop,
                         retrieve=function() readFun(path, ...),
@@ -81,9 +81,9 @@ Biome$set("public", "registerStaticFileArtifact", function(name, path, readFun=r
 ##' Register a function that produces an artifact
 ##'
 ##' @usage
-##' App <- Biome$new()
+##' App <- Grove$new()
 ##'
-Biome$set("public", "registerFunction", function(func, funcBody=func, funcName=deparse(substitute(func)),
+Grove$set("public", "registerFunction", function(func, funcBody=func, funcName=deparse(substitute(func)),
                                                  path=paste0(funcName, ".rds")) {
   stopifnot(inherits(funcBody, "function"))
   funcArgs <- names(formals(funcBody))
@@ -92,7 +92,7 @@ Biome$set("public", "registerFunction", function(func, funcBody=func, funcName=d
 
 
 
-Biome$set("public", "getArtifact", function(name) {
+Grove$set("public", "getArtifact", function(name) {
   self$assertArtifactRegistered(name)
 
   if (!self$isCurrent(name)) {
@@ -108,7 +108,7 @@ Biome$set("public", "getArtifact", function(name) {
   return(private$memCache[[name]])
 })
 
-Biome$set("public", "isCurrent", function(name) {
+Grove$set("public", "isCurrent", function(name) {
   self$assertArtifactRegistered(name)
   deps <- private$deps[[name]]
 
@@ -123,19 +123,19 @@ Biome$set("public", "isCurrent", function(name) {
   return(TRUE)
 })
 
-Biome$set("public", "artifactRegistered", function(name) {
+Grove$set("public", "artifactRegistered", function(name) {
   name %in% names(private$deps)
 })
 
-Biome$set("public", "assertArtifactRegistered", function(name) {
+Grove$set("public", "assertArtifactRegistered", function(name) {
   if (!self$artifactRegistered(name)) stop("No such artifact '", name, "'")
 })
 
 
-Biome$set("public", "listArtifacts", function(name) {
+Grove$set("public", "listArtifacts", function(name) {
   names(private$deps)
 })
 
-Biome$set("public", "getDependencyGraph", function() {
+Grove$set("public", "getDependencyGraph", function() {
   ## TODO return igraph object
 })

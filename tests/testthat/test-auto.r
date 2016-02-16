@@ -1,6 +1,6 @@
 context("Auto interfaces")
 
-SolarOPADeps <- Biome$new()
+SolarOPADeps <- Grove$new()
 SolarOPADeps$setRoot('foo/bar')
 
 `%auto%` <- SolarOPADeps$registerFunction

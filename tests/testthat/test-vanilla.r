@@ -2,9 +2,9 @@ context("Vanilla interfaces")
 
 SolarOPADeps <- R6Class(
   "SolarOPADeps",
-  inherit = Biome)
+  inherit = Grove)
 
-SolarOPADeps <- Biome$new()
+SolarOPADeps <- Grove$new()
 
 SolarOPADeps$registerRDSArtifact(
   name="long.term.projections",
