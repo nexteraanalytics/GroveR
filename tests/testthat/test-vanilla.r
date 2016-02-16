@@ -1,46 +1,51 @@
 context("Vanilla interfaces")
 
-SolarOPADeps <- R6Class(
-  "SolarOPADeps",
-  inherit = Grove)
+test_that("Vanilla interfaces work", {
+  root <- 'foo/bar'
+  toproot <- 'foo'
 
-SolarOPADeps <- Grove$new()
+  ## Initialize files
+  if(dir.exists(toproot))
+    unlink(toproot, recursive = TRUE)
+  if(!dir.exists(root))
+    dir.create(root, recursive = TRUE)
+  saveRDS(1:9, "foo/bar/scada.met.clearsky.data.rds")
+  saveRDS(1:4, "foo/bar/inverter.met.info.rds")
+  on.exit(if(dir.exists(toproot)) unlink(toproot, recursive = TRUE))
 
-SolarOPADeps$registerRDSArtifact(
-  name="long.term.projections",
-  deps=c("geomodel.data", "scada.met.clearsky.data", "inverter.met.info"),
-  create=function(geomodel.data, scada.met.clearsky.data, inverter.met.info) {
-    list(g=length(geomodel.data),
-         s=length(scada.met.clearsky.data),
-         i=length(inverter.met.info))
-  },
-  path="foo/bar/ltp.rds")
+  App <- Grove$new()
 
-SolarOPADeps$registerRDSArtifact(
-  name="geomodel.data",
-  create=function() {
-    1:7
-  },
-  path="foo/bar/geomodel.data.rds")
+  App$registerRDSArtifact(
+    name="long.term.projections",
+    deps=c("geomodel.data", "scada.met.clearsky.data", "inverter.met.info"),
+    create=function(geomodel.data, scada.met.clearsky.data, inverter.met.info) {
+      list(g=length(geomodel.data),
+           s=length(scada.met.clearsky.data),
+           i=length(inverter.met.info))
+    },
+    path="foo/bar/ltp.rds")
 
-SolarOPADeps$registerStaticFileArtifact(
-  name="scada.met.clearsky.data",
-  path="foo/bar/scada.met.clearsky.data.rds")
+  App$registerRDSArtifact(
+    name="geomodel.data",
+    create=function() {
+      1:7
+    },
+    path="foo/bar/geomodel.data.rds")
 
-SolarOPADeps$registerStaticFileArtifact(
-  name="inverter.met.info",
-  path="foo/bar/inverter.met.info.rds")
+  App$registerStaticFileArtifact(
+    name="scada.met.clearsky.data",
+    path="foo/bar/scada.met.clearsky.data.rds")
 
-if(!dir.exists('foo/bar'))
-  dir.create('foo/bar', recursive = TRUE)
-saveRDS(1:9, "foo/bar/scada.met.clearsky.data.rds")
-saveRDS(1:4, "foo/bar/inverter.met.info.rds")
+  App$registerStaticFileArtifact(
+    name="inverter.met.info",
+    path="foo/bar/inverter.met.info.rds")
 
-res <- SolarOPADeps$getArtifact('long.term.projections')
+  res <- App$getArtifact('long.term.projections')
 
-testthat::expect_equal(res$g, 7)
-testthat::expect_equal(res$s, 9)
-testthat::expect_equal(res$i, 4)
+  testthat::expect_equal(res$g, 7)
+  testthat::expect_equal(res$s, 9)
+  testthat::expect_equal(res$i, 4)
 
-## Catch non-functions early
-expect_error(SolarOPADeps$registerFunction(foo, "bar"), "function.*not TRUE")
+  ## Catch non-functions early
+  expect_error(App$registerFunction(foo, "bar"), "function.*not TRUE")
+})

@@ -108,7 +108,6 @@ Grove$set("public", "auto", function(what, how=what, name=deparse(substitute(wha
                              create=function() how,
                              path=paste0(name, ".rds"))
   }
-
 })
 
 
@@ -152,7 +151,7 @@ Grove$set("public", "assertArtifactRegistered", function(name) {
 })
 
 
-Grove$set("public", "listArtifacts", function(name) {
+Grove$set("public", "artifactNames", function(name) {
   names(private$deps)
 })
 
