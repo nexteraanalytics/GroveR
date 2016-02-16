@@ -98,6 +98,11 @@ Grove$set("public", "registerFunction", function(func, funcBody=func, funcName=d
 ##'   rbind(dep1, dep2) # Or whatever
 ##' }
 ##'
+##' ## Or also create a local function
+##' App$auto(thingy <- function(dep1, dep2) {
+##'   rbind(dep1, dep2) # Or whatever
+##' })
+##'
 ##' @name set
 Grove$set("public", "auto", function(what, how=what, name=deparse(substitute(what))) {
   if(inherits(how, "function")) {

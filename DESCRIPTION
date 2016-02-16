@@ -1,10 +1,10 @@
 Package: Grove
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Hierarchical dependency management of objects, à la "make"
 Version: 0.1.0
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
+Authors@R: person("Ken", "Williams", email = "ken.williams@windlogics.com", role = c("aut", "cre"))
 Description: More about what it does (maybe more than one line)
-License: What license is it under?
+License: BSD
 LazyData: TRUE
 Imports: R6, igraph
 Suggests: testthat
