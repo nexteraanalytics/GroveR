@@ -1,5 +1,5 @@
 ##' @importFrom R6 R6Class
-
+##' @export
 Grove <- R6Class(
   "Grove",
   private = list(
