@@ -31,10 +31,10 @@ match.extr <- function(parse, i) {
 }
 
 ## TODO - don't memCache everything?
-Grove$set("public", "registerArtifact", function(name, deps, create, retrieve, checkTime, store) {
+Grove$set("public", "registerArtifact", function(name, deps, create, retrieve, checkTime, store, clobber=FALSE) {
   if (missing(deps) || is.null(deps))
     deps <- character()
-  if (name %in% names(private$deps))
+  if (!clobber && name %in% names(private$deps))
     stop("'", name, "' is already a registered artifact")
   private$deps[[name]] <- deps
   private$create[[name]] <- create
