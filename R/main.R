@@ -109,10 +109,11 @@ Grove$set("public", "auto", function(what, how=what, name=deparse(substitute(wha
   if(inherits(how, "function")) {
     self$registerFunction(funcName=name, funcBody=how)
   } else {
-    self$registerRDSArtifact(name,
-                             deps=c(),
-                             create=function() how,
-                             path=paste0(name, ".rds"))
+    self$registerArtifact(name,
+                          create=noop,
+                          store=noop,
+                          retrieve=function() how,
+                          checkTime=function() Inf)
   }
 })
 
