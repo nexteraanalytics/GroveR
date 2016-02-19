@@ -151,6 +151,30 @@ Grove$set("public", "artifactNames", function(name) {
   names(private$deps)
 })
 
+Grove$set("public", "showArtifact", function(name) {
+  self$assertArtifactRegistered(name)
+  list( deps = private$deps[[name]],
+        create = private$create[[name]],
+        retrieve = private$retrieve[[name]],
+        checkTime = private$checkTime[[name]],
+        store = private$store[[name]]
+  )
+})
+
 Grove$set("public", "getDependencyGraph", function() {
   ## TODO return igraph object
+})
+
+Grove$set("public", "asGraphViz", function() {
+  out <- 'digraph {\n  rankdir=TB;\n  node [style=filled fillcolor="white" color="black"];\n'
+  for(art in names(private$deps)) {
+    color <- if(self$isCurrent(art)) "green" else "red"
+    out <- paste0(out, sprintf('  "%s" [fillcolor=%s];\n', art, color))
+    if(length(private$deps[[art]]) > 0) {
+      deps <- paste0('"', paste(private$deps[[art]], collapse='" "'), '"')
+      out <- paste0(out, sprintf('  "%s" -> {%s};\n', art, deps))
+    }
+  }
+  out <- paste0(out, "}\n")
+  out
 })
