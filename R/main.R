@@ -19,17 +19,6 @@ Grove$set("public", "setRoot", function(dir) {
 
 noop <- function(...){}
 
-match.parse <- function(pattern, x, ...) {
-  result <- regexpr(pattern, x, ...)
-  attr(result, 'text') <- x
-  result
-}
-
-match.extr <- function(parse, i) {
-  start <- attr(parse, 'capture.start')[i]
-  substr(attr(parse, 'text'), start, start+attr(parse, 'capture.length')[i]-1)
-}
-
 ## TODO - don't memCache everything?
 Grove$set("public", "registerArtifact", function(name, deps, create, retrieve, checkTime, store, clobber=FALSE) {
   if (missing(deps) || is.null(deps))
