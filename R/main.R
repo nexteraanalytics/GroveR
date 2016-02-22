@@ -34,6 +34,7 @@ Grove$set("public", "registerArtifact", function(name, deps, create, retrieve, c
 })
 
 Grove$set("public", "registerRDSArtifact", function(name, deps, create, path) {
+  path <- file.path(private$fileRoot, path)
   self$registerArtifact(name,
                         deps,
                         create,
@@ -47,6 +48,7 @@ Grove$set("public", "registerRDSArtifact", function(name, deps, create, path) {
 })
 
 Grove$set("public", "registerCSVArtifact", function(name, deps, create, path, readFun=read.csv, writeFun=write.csv, ...) {
+  path <- file.path(private$fileRoot, path)
   self$registerArtifact(name,
                         deps,
                         create,
@@ -60,6 +62,7 @@ Grove$set("public", "registerCSVArtifact", function(name, deps, create, path, re
 })
 
 Grove$set("public", "registerStaticFileArtifact", function(name, path, readFun=readRDS, ...) {
+  path <- file.path(private$fileRoot, path)
   self$registerArtifact(name,
                         create=noop,
                         retrieve=function() readFun(path, ...),

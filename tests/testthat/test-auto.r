@@ -15,6 +15,7 @@ test_that("auto interfaces work", {
 
 
   App <- Grove$new()
+  App$setRoot(root)
   `%auto%` <- App$auto
 
   long.term.projections %auto% function(geomodel.data, scada.met.clearsky.data, inverter.met.info) {
@@ -24,8 +25,8 @@ test_that("auto interfaces work", {
   }
 
   geomodel.data %auto% 1:7
-  scada.met.clearsky.data %auto% function() readRDS("foo/bar/scada.met.clearsky.data.rds")
-  inverter.met.info %auto% function() readRDS("foo/bar/inverter.met.info.rds")
+  scada.met.clearsky.data %auto% function() readRDS("scada.met.clearsky.data.rds")
+  inverter.met.info %auto% function() readRDS("inverter.met.info.rds")
 
   registered <- App$artifactNames()
   expect_equal(sort(registered), c("geomodel.data", "inverter.met.info",

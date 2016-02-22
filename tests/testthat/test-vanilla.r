@@ -14,6 +14,7 @@ test_that("Vanilla interfaces work", {
   on.exit(if(dir.exists(toproot)) unlink(toproot, recursive = TRUE))
 
   App <- Grove$new()
+  App$setRoot(root)
 
   App$registerRDSArtifact(
     name="long.term.projections",
@@ -23,22 +24,22 @@ test_that("Vanilla interfaces work", {
            s=length(scada.met.clearsky.data),
            i=length(inverter.met.info))
     },
-    path="foo/bar/ltp.rds")
+    path="ltp.rds")
 
   App$registerRDSArtifact(
     name="geomodel.data",
     create=function() {
       1:7
     },
-    path="foo/bar/geomodel.data.rds")
+    path="geomodel.data.rds")
 
   App$registerStaticFileArtifact(
     name="scada.met.clearsky.data",
-    path="foo/bar/scada.met.clearsky.data.rds")
+    path="scada.met.clearsky.data.rds")
 
   App$registerStaticFileArtifact(
     name="inverter.met.info",
-    path="foo/bar/inverter.met.info.rds")
+    path="inverter.met.info.rds")
 
   res <- App$getArtifact('long.term.projections')
 
