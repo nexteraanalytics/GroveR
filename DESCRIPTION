@@ -1,6 +1,6 @@
 Package: Grove
 Type: Package
-Title: Hierarchical dependency management of objects, à la "make"
+Title: Hierarchical dependency management of objects, a la "make"
 Version: 0.1.0
 Authors@R: person("Ken", "Williams", email = "ken.williams@windlogics.com", role = c("aut", "cre"))
 Description: More about what it does (maybe more than one line)
