@@ -33,7 +33,7 @@ Grove$set("public", "registerArtifact", function(name, deps, create, retrieve, c
   invisible()
 })
 
-Grove$set("public", "registerRDSArtifact", function(name, deps, create, path) {
+Grove$set("public", "registerRDSArtifact", function(name, deps, create, path, ...) {
   path <- file.path(private$fileRoot, path)
   self$registerArtifact(name,
                         deps,
@@ -44,7 +44,7 @@ Grove$set("public", "registerRDSArtifact", function(name, deps, create, path) {
                           if (!file.exists(dirname(path)))
                             dir.create(dirname(path), recursive=TRUE)
                           saveRDS(object, path)
-                        })
+                        }, ...)
 })
 
 Grove$set("public", "registerCSVArtifact", function(name, deps, create, path, readFun=read.csv, writeFun=write.csv, ...) {
@@ -75,10 +75,10 @@ Grove$set("public", "registerStaticFileArtifact", function(name, path, readFun=r
 })
 
 Grove$set("public", "registerFunction", function(func, funcBody=func, funcName=deparse(substitute(func)),
-                                                 path=paste0(funcName, ".rds")) {
+                                                 path=paste0(funcName, ".rds"), ...) {
   stopifnot(inherits(funcBody, "function"))
   funcArgs <- names(formals(funcBody))
-  self$registerRDSArtifact(funcName, funcArgs, funcBody, paste0(funcName, ".rds"))
+  self$registerRDSArtifact(funcName, funcArgs, funcBody, path=path, ...)
 })
 
 ##' Register a do-what-I-mean artifact
