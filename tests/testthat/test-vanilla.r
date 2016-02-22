@@ -11,9 +11,10 @@ test_that("Vanilla interfaces work", {
     unlink(toproot, recursive = TRUE)
   if(!dir.exists(root))
     dir.create(root, recursive = TRUE)
+  on.exit(if(dir.exists(toproot)) unlink(toproot, recursive = TRUE))
+
   saveRDS(1:9, "foo/bar/scada.met.clearsky.data.rds")
   saveRDS(1:4, "foo/bar/inverter.met.info.rds")
-  on.exit(if(dir.exists(toproot)) unlink(toproot, recursive = TRUE))
 
   App <- Grove$new()
   App$setRoot(root)

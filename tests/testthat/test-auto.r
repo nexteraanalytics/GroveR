@@ -11,10 +11,10 @@ test_that("auto interfaces work", {
     unlink(toproot, recursive = TRUE)
   if(!dir.exists(root))
     dir.create(root, recursive = TRUE)
-  saveRDS(1:9, "foo/bar/scada.met.clearsky.data.rds")
-  saveRDS(1:4, "foo/bar/inverter.met.info.rds")
   on.exit(if(dir.exists(toproot)) unlink(toproot, recursive = TRUE))
 
+  saveRDS(1:9, "foo/bar/scada.met.clearsky.data.rds")
+  saveRDS(1:4, "foo/bar/inverter.met.info.rds")
 
   App <- Grove$new()
   App$setRoot(root)
@@ -37,7 +37,7 @@ test_that("auto interfaces work", {
 
   res <- App$getArtifact('long.term.projections')
 
-  testthat::expect_equal(res$g, 7)
-  testthat::expect_equal(res$s, 9)
-  testthat::expect_equal(res$i, 4)
+  expect_equal(res$g, 7)
+  expect_equal(res$s, 9)
+  expect_equal(res$i, 4)
 })
