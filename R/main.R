@@ -109,7 +109,7 @@ Grove$set("public", "auto", function(what, how=what, name=deparse(substitute(wha
                           create=noop,
                           store=noop,
                           retrieve=function() how,
-                          checkTime=function() Inf)
+                          checkTime=function() -Inf)
   }
 })
 
