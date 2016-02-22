@@ -74,6 +74,27 @@ Grove$set("public", "registerStaticFileArtifact", function(name, path, readFun=r
                         store=function(object) stop("Can't write '", name, "', it was declared as static"))
 })
 
+Grove$set("public", "registerImage", function(name, deps, create, path=name, type=c("png", "pdf"), clobber=FALSE, ...) {
+  ## TODO: infer 'type' from 'path' if missing
+  ## TODO: infer 'deps' from 'create' if missing
+  path <- file.path(private$fileRoot, path)
+  args <- list(path, ...)
+  devFunc <- switch(match.arg(type),
+                    png=png,
+                    pdf=pdf)
+  self$registerArtifact(name,
+                        deps,
+                        create=function() {
+                          do.call(devFunc, args)
+                          on.exit(dev.off())
+                          do.call(create, private$fetchDeps(name))
+                        },
+                        checkTime=function() file.mtime(path),
+                        store=noop,
+                        clobber=clobber,
+                        retrieve=noop)
+})
+
 Grove$set("public", "registerFunction", function(func, funcBody=func, funcName=deparse(substitute(func)),
                                                  path=paste0(funcName, ".rds"), ...) {
   stopifnot(inherits(funcBody, "function"))
