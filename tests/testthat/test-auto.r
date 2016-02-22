@@ -1,5 +1,7 @@
 context("Auto interfaces")
 
+futile.logger::flog.threshold('WARN')
+
 test_that("auto interfaces work", {
   root <- 'foo/bar'
   toproot <- 'foo'

@@ -113,13 +113,21 @@ Grove$set("public", "auto", function(what, how=what, name=deparse(substitute(wha
   }
 })
 
+Grove$set("private", "fetchDeps", function(name) {
+  lapply(private$deps[[name]], function(n) self$getArtifact(n))
+})
 
+Grove$set("private", "runCreate", function(name) {
+  flog.info("Generating Grove artifact '%s'", name)
+  do.call(private$create[[name]], private$fetchDeps(name))
+})
+
+##' @importFrom futile.logger flog.info
 Grove$set("public", "getArtifact", function(name) {
   self$assertArtifactRegistered(name)
 
   if (!self$isCurrent(name)) {
-    depObjs <- lapply(private$deps[[name]], function(n) self$getArtifact(n))
-    private$memCache[[name]] <- do.call(private$create[[name]], depObjs)
+    private$memCache[[name]] <- private$runCreate(name)
     private$store[[name]](private$memCache[[name]])
   }
 

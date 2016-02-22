@@ -1,5 +1,7 @@
 context("Vanilla interfaces")
 
+futile.logger::flog.threshold('WARN')
+
 test_that("Vanilla interfaces work", {
   root <- 'foo/bar'
   toproot <- 'foo'
