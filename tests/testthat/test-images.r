@@ -16,6 +16,7 @@ test_that("images work", {
   App <- Grove$new()
   App$setRoot(root)
 
+  ## Image without args
   App$registerImage(
     name='foo.pdf',
     create=function() {
@@ -27,4 +28,19 @@ test_that("images work", {
   x <- App$getArtifact('foo.pdf')
   expect_true(file.exists(file.path(root, 'foo.pdf')))
 
+
+  ## Image with args
+  App$registerImage(
+    name='bar.pdf',
+    deps=c('a', 'b'),
+    create=function(a, b) {
+      plot(mean(a), mean(b))
+    },
+    type='pdf'
+  )
+  App$auto(a, 1:5)
+  App$auto(b, 2:9)
+
+  x <- App$getArtifact('bar.pdf')
+  expect_true(file.exists(file.path(root, 'bar.pdf')))
 })

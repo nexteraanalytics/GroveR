@@ -84,10 +84,11 @@ Grove$set("public", "registerImage", function(name, deps, create, path=name, typ
                     pdf=pdf)
   self$registerArtifact(name,
                         deps,
-                        create=function() {
+                        create=function(...) {
                           do.call(devFunc, args)
                           on.exit(dev.off())
-                          do.call(create, private$fetchDeps(name))
+                          args2 <- list(...)
+                          do.call(create, args2)
                         },
                         checkTime=function() file.mtime(path),
                         store=noop,
