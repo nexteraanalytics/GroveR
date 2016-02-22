@@ -65,7 +65,11 @@ Grove$set("public", "registerStaticFileArtifact", function(name, path, readFun=r
   path <- file.path(private$fileRoot, path)
   self$registerArtifact(name,
                         create=noop,
-                        retrieve=function() readFun(path, ...),
+                        retrieve=function() {
+                          if(!file.exists(path))
+                            stop("Can't read '", path, "', no such file")
+                          readFun(path, ...)
+                        },
                         checkTime=function() file.mtime(path),
                         store=function(object) stop("Can't write '", name, "', it was declared as static"))
 })
