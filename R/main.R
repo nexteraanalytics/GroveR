@@ -123,15 +123,16 @@ Grove$set("public", "registerFunction", function(func, funcBody=func, funcName=d
 ##' App$auto(thingy2)
 ##'
 ##' @name set
-Grove$set("public", "auto", function(what, how=what, name=deparse(substitute(what))) {
+Grove$set("public", "auto", function(what, how=what, name=deparse(substitute(what)), ...) {
   if(inherits(how, "function")) {
-    self$registerFunction(funcName=name, funcBody=how)
+    self$registerFunction(funcName=name, funcBody=how, ...)
   } else {
     self$registerArtifact(name,
                           create=noop,
                           store=noop,
                           retrieve=function() how,
-                          checkTime=function() -Inf)
+                          checkTime=function() -Inf,
+                          ...)
   }
 })
 
