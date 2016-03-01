@@ -1,7 +1,7 @@
 ##' @importFrom R6 R6Class
 ##' @export
-Grove <- R6Class(
-  "Grove",
+GroveR <- R6Class(
+  "GroveR",
   private = list(
     fileRoot = ".",
     deps = list(),
@@ -13,14 +13,14 @@ Grove <- R6Class(
   )
 )
 
-Grove$set("public", "setRoot", function(dir) {
+GroveR$set("public", "setRoot", function(dir) {
   private$fileRoot <- dir
 })
 
 noop <- function(...){}
 
 ## TODO - don't memCache everything?
-Grove$set("public", "registerArtifact", function(name, deps, create, retrieve, checkTime, store, clobber=FALSE) {
+GroveR$set("public", "registerArtifact", function(name, deps, create, retrieve, checkTime, store, clobber=FALSE) {
   if (missing(deps) || is.null(deps))
     deps <- character()
   if (!clobber && name %in% names(private$deps))
@@ -33,7 +33,7 @@ Grove$set("public", "registerArtifact", function(name, deps, create, retrieve, c
   invisible()
 })
 
-Grove$set("public", "registerRDSArtifact", function(name, deps, create, path, ...) {
+GroveR$set("public", "registerRDSArtifact", function(name, deps, create, path, ...) {
   path <- file.path(private$fileRoot, path)
   self$registerArtifact(name,
                         deps,
@@ -47,7 +47,7 @@ Grove$set("public", "registerRDSArtifact", function(name, deps, create, path, ..
                         }, ...)
 })
 
-Grove$set("public", "registerCSVArtifact", function(name, deps, create, path, readFun=read.csv, writeFun=write.csv, ...) {
+GroveR$set("public", "registerCSVArtifact", function(name, deps, create, path, readFun=read.csv, writeFun=write.csv, ...) {
   path <- file.path(private$fileRoot, path)
   self$registerArtifact(name,
                         deps,
@@ -61,7 +61,7 @@ Grove$set("public", "registerCSVArtifact", function(name, deps, create, path, re
                         })
 })
 
-Grove$set("public", "registerStaticFileArtifact", function(name, path, readFun=readRDS, ...) {
+GroveR$set("public", "registerStaticFileArtifact", function(name, path, readFun=readRDS, ...) {
   path <- file.path(private$fileRoot, path)
   self$registerArtifact(name,
                         create=noop,
@@ -74,7 +74,7 @@ Grove$set("public", "registerStaticFileArtifact", function(name, path, readFun=r
                         store=function(object) stop("Can't write '", name, "', it was declared as static"))
 })
 
-Grove$set("public", "registerImage", function(name, deps, create, path=name, type=c("png", "pdf"), clobber=FALSE, ...) {
+GroveR$set("public", "registerImage", function(name, deps, create, path=name, type=c("png", "pdf"), clobber=FALSE, ...) {
   ## TODO: infer 'type' from 'path' if missing
   ## TODO: infer 'deps' from 'create' if missing
   path <- file.path(private$fileRoot, path)
@@ -96,7 +96,7 @@ Grove$set("public", "registerImage", function(name, deps, create, path=name, typ
                         retrieve=noop)
 })
 
-Grove$set("public", "registerFunction", function(func, funcBody=func, funcName=deparse(substitute(func)),
+GroveR$set("public", "registerFunction", function(func, funcBody=func, funcName=deparse(substitute(func)),
                                                  path=paste0(funcName, ".rds"), ...) {
   stopifnot(inherits(funcBody, "function"))
   funcArgs <- names(formals(funcBody))
@@ -108,7 +108,7 @@ Grove$set("public", "registerFunction", function(func, funcBody=func, funcName=d
 ##' Register a function, or data item, as an artifact.
 ##'
 ##' @examples
-##' App <- Grove$new()
+##' App <- GroveR$new()
 ##' `%auto%` <- App$auto
 ##'
 ##' ## 'thingy' depends on 'dep1' and 'dep2'
@@ -123,7 +123,7 @@ Grove$set("public", "registerFunction", function(func, funcBody=func, funcName=d
 ##' App$auto(thingy2)
 ##'
 ##' @name set
-Grove$set("public", "auto", function(what, how=what, name=deparse(substitute(what)), ...) {
+GroveR$set("public", "auto", function(what, how=what, name=deparse(substitute(what)), ...) {
   if(inherits(how, "function")) {
     self$registerFunction(funcName=name, funcBody=how, ...)
   } else {
@@ -136,17 +136,17 @@ Grove$set("public", "auto", function(what, how=what, name=deparse(substitute(wha
   }
 })
 
-Grove$set("private", "fetchDeps", function(name) {
+GroveR$set("private", "fetchDeps", function(name) {
   lapply(private$deps[[name]], function(n) self$getArtifact(n))
 })
 
-Grove$set("private", "runCreate", function(name) {
-  flog.info("Generating Grove artifact '%s'", name)
+GroveR$set("private", "runCreate", function(name) {
+  flog.info("Generating GroveR artifact '%s'", name)
   do.call(private$create[[name]], private$fetchDeps(name))
 })
 
 ##' @importFrom futile.logger flog.info
-Grove$set("public", "getArtifact", function(name) {
+GroveR$set("public", "getArtifact", function(name) {
   self$assertArtifactRegistered(name)
 
   if (!self$isCurrent(name)) {
@@ -161,7 +161,7 @@ Grove$set("public", "getArtifact", function(name) {
   return(private$memCache[[name]])
 })
 
-Grove$set("public", "isCurrent", function(name) {
+GroveR$set("public", "isCurrent", function(name) {
   self$assertArtifactRegistered(name)
   deps <- private$deps[[name]]
 
@@ -176,20 +176,20 @@ Grove$set("public", "isCurrent", function(name) {
   return(TRUE)
 })
 
-Grove$set("public", "artifactRegistered", function(name) {
+GroveR$set("public", "artifactRegistered", function(name) {
   name %in% names(private$deps)
 })
 
-Grove$set("public", "assertArtifactRegistered", function(name) {
+GroveR$set("public", "assertArtifactRegistered", function(name) {
   if (!self$artifactRegistered(name)) stop("No such artifact '", name, "'")
 })
 
 
-Grove$set("public", "artifactNames", function(name) {
+GroveR$set("public", "artifactNames", function(name) {
   names(private$deps)
 })
 
-Grove$set("public", "showArtifact", function(name) {
+GroveR$set("public", "showArtifact", function(name) {
   self$assertArtifactRegistered(name)
   list( deps = private$deps[[name]],
         create = private$create[[name]],
@@ -199,11 +199,11 @@ Grove$set("public", "showArtifact", function(name) {
   )
 })
 
-Grove$set("public", "getDependencyGraph", function() {
+GroveR$set("public", "getDependencyGraph", function() {
   ## TODO return igraph object
 })
 
-Grove$set("public", "asGraphViz", function() {
+GroveR$set("public", "asGraphViz", function() {
   out <- 'digraph {\n  rankdir=TB;\n  node [style=filled fillcolor="white" color="black"];\n'
   for(art in names(private$deps)) {
     color <- if(self$isCurrent(art)) "green" else "red"

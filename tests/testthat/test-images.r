@@ -13,7 +13,7 @@ test_that("images work", {
     dir.create(root, recursive = TRUE)
   on.exit(if(dir.exists(toproot)) unlink(toproot, recursive = TRUE))
 
-  App <- Grove$new()
+  App <- GroveR$new()
   App$setRoot(root)
 
   ## Image without args

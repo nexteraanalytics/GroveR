@@ -1,4 +1,4 @@
-Package: Grove
+Package: GroveR
 Type: Package
 Title: Hierarchical dependency management of objects, a la "make"
 Version: 0.1.0

@@ -1,2 +1,2 @@
 library(testthat)
-tmp = test_check("Grove",reporter="tap")
+tmp = test_check("GroveR",reporter="tap")

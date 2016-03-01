@@ -16,7 +16,7 @@ test_that("auto interfaces work", {
   saveRDS(1:9, "foo/bar/scada.met.clearsky.data.rds")
   saveRDS(1:4, "foo/bar/inverter.met.info.rds")
 
-  App <- Grove$new()
+  App <- GroveR$new()
   App$setRoot(root)
   `%auto%` <- App$auto
 
