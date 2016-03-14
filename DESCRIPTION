@@ -6,5 +6,9 @@ Authors@R: person("Ken", "Williams", email = "ken.williams@windlogics.com", role
 Description: More about what it does (maybe more than one line)
 License: BSD
 LazyData: TRUE
-Imports: R6, igraph
-Suggests: testthat
+Imports:
+    R6,
+    igraph
+Suggests:
+    testthat
+RoxygenNote: 5.0.1
