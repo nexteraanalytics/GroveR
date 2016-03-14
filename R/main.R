@@ -76,9 +76,14 @@ GroveR$set("public", "registerStaticFileArtifact", function(name, path, readFun=
 
 GroveR$set("public", "registerImage", function(name, deps, create, path=name, type=c("png", "pdf"), clobber=FALSE, ...) {
   ## TODO: infer 'type' from 'path' if missing
-  ## TODO: infer 'deps' from 'create' if missing
+
   path <- file.path(private$fileRoot, path)
   args <- list(path, ...)
+
+  if (missing(deps)) {
+    deps <- names(formals(create))
+  }
+
   devFunc <- switch(match.arg(type),
                     png=png,
                     pdf=pdf)
