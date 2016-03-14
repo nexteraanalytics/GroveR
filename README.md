@@ -55,5 +55,6 @@ As benefits, the application now has:
  * automatic caching of intermediate artifacts
  * intelligent rebuilding of artifacts when dependencies change
  * standardized naming of data artifacts throughout the application
- * graphical tools to ![show data dependencies](docs/gv.png) (colors indicate what's up-to-date or not)
+ * graphical tools to show data dependencies (colors indicate what's up-to-date or not):
+   ![data dependencies](docs/gv.png)
  * configurable logging of artifact creation using [futile.logger](https://cran.r-project.org/web/packages/futile.logger/index.html)
