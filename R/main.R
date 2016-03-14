@@ -204,13 +204,13 @@ GroveR$set("public", "getDependencyGraph", function() {
 })
 
 GroveR$set("public", "asGraphViz", function() {
-  out <- 'digraph {\n  rankdir=TB;\n  node [style=filled fillcolor="white" color="black"];\n'
+  out <- 'digraph {\n  rankdir=BT;\n  node [style=filled fillcolor="white" color="black"];\n'
   for(art in names(private$deps)) {
     color <- if(self$isCurrent(art)) "green" else "red"
     out <- paste0(out, sprintf('  "%s" [fillcolor=%s];\n', art, color))
     if(length(private$deps[[art]]) > 0) {
       deps <- paste0('"', paste(private$deps[[art]], collapse='" "'), '"')
-      out <- paste0(out, sprintf('  "%s" -> {%s};\n', art, deps))
+      out <- paste0(out, sprintf('  {%s} -> "%s";\n', deps, art))
     }
   }
   out <- paste0(out, "}\n")
