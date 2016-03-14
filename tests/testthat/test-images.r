@@ -4,7 +4,7 @@ futile.logger::flog.threshold('WARN')
 
 test_that("images work", {
   root <- 'foo/bar'
-  toproot <- 'foo'
+  toproot <- dirname(root)
 
   ## Initialize files
   if(dir.exists(toproot))
@@ -16,6 +16,17 @@ test_that("images work", {
   App <- GroveR$new()
   App$setRoot(root)
 
+  ## Image without args or type
+  App$registerImage(
+    name='baz.pdf',
+    create=function() {
+      plot(1, 1)
+    }
+  )
+  x <- App$getArtifact('baz.pdf')
+  expect_true(file.exists(file.path(root, 'baz.pdf')))
+
+
   ## Image without args
   App$registerImage(
     name='foo.pdf',
@@ -24,7 +35,6 @@ test_that("images work", {
     },
     type='pdf'
   )
-
   x <- App$getArtifact('foo.pdf')
   expect_true(file.exists(file.path(root, 'foo.pdf')))
 
@@ -40,7 +50,6 @@ test_that("images work", {
   )
   App$auto(a, 1:5)
   App$auto(b, 2:9)
-
   x <- App$getArtifact('bar.pdf')
   expect_true(file.exists(file.path(root, 'bar.pdf')))
 })

@@ -80,13 +80,17 @@ GroveR$set("public", "registerImage", function(name, deps, create, path=name, ty
   path <- file.path(private$fileRoot, path)
   args <- list(path, ...)
 
+  if (missing(type)) {
+    type <- sub("^.+\\.([a-zA-Z0-9]+)$", "\\1", path)
+  } else if (is.character(type)) {
+    type <- match.arg(type)
+  }
+  devFunc <- match.fun(type)
+
   if (missing(deps)) {
     deps <- names(formals(create))
   }
 
-  devFunc <- switch(match.arg(type),
-                    png=png,
-                    pdf=pdf)
   self$registerArtifact(name,
                         deps,
                         create=function(...) {
