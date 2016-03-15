@@ -1,6 +1,5 @@
-This is a project called "Grove", and an implementation of it in R called "GroveR".  The intention 
-is to bring the power of [Declarative Programming](https://en.wikipedia.org/wiki/Declarative_programming)
-to data-centered applications.  For example, suppose a piece of code looks like this:
+GroveR brings [Declarative Programming](https://en.wikipedia.org/wiki/Declarative_programming)
+to data-centered applications.  For example, suppose your code looks like this:
 
 ```
 create_foo <- function(bar, BaZzO) {
