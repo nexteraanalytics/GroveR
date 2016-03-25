@@ -52,4 +52,17 @@ test_that("images work", {
   App$auto(b, 2:9)
   x <- App$getArtifact('bar.pdf')
   expect_true(file.exists(file.path(root, 'bar.pdf')))
+
+
+  ## Image with args, implicitly declared
+  App$registerImage(
+    name='bam.pdf',
+    create=function(d, e) {
+      plot(mean(d), mean(e))
+    }
+  )
+  App$auto(d, 1:5)
+  App$auto(e, 2:9)
+  x <- App$getArtifact('bam.pdf')
+  expect_true(file.exists(file.path(root, 'bam.pdf')))
 })
