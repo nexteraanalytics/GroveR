@@ -147,7 +147,12 @@ GroveR$set("public", "auto", function(what, how=what, name=deparse(substitute(wh
 })
 
 GroveR$set("private", "fetchDeps", function(name) {
-  lapply(private$deps[[name]], function(n) self$getArtifact(n))
+  lapply(self$depNames(name), function(n) self$getArtifact(n))
+})
+
+GroveR$set("public", "depNames", function(name) {
+  self$assertArtifactRegistered(name)
+  private$deps[[name]]
 })
 
 GroveR$set("private", "runCreate", function(name) {
@@ -173,7 +178,7 @@ GroveR$set("public", "getArtifact", function(name) {
 
 GroveR$set("public", "isCurrent", function(name) {
   self$assertArtifactRegistered(name)
-  deps <- private$deps[[name]]
+  deps <- self$depNames(name)
 
   mtime <- private$checkTime[[name]]()
   if(is.na(mtime)) return(FALSE)
@@ -201,7 +206,7 @@ GroveR$set("public", "artifactNames", function(name) {
 
 GroveR$set("public", "showArtifact", function(name) {
   self$assertArtifactRegistered(name)
-  list( deps = private$deps[[name]],
+  list( deps = self$depNames(name),
         create = private$create[[name]],
         retrieve = private$retrieve[[name]],
         checkTime = private$checkTime[[name]],
@@ -218,8 +223,8 @@ GroveR$set("public", "asGraphViz", function() {
   for(art in names(private$deps)) {
     color <- if(self$isCurrent(art)) "green" else "red"
     out <- paste0(out, sprintf('  "%s" [fillcolor=%s];\n', art, color))
-    if(length(private$deps[[art]]) > 0) {
-      deps <- paste0('"', paste(private$deps[[art]], collapse='" "'), '"')
+    if(length(self$depNames(art)) > 0) {
+      deps <- paste0('"', paste(self$depNames(art), collapse='" "'), '"')
       out <- paste0(out, sprintf('  {%s} -> "%s";\n', deps, art))
     }
   }
