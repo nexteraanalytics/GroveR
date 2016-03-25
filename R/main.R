@@ -2,6 +2,7 @@
 ##' @export
 GroveR <- R6Class(
   "GroveR",
+  portable = FALSE,
   private = list(
     fileRoot = ".",
     artDefs = list(),
@@ -235,8 +236,22 @@ GroveR$set("public", "showArtifact", function(name) {
 })
 
 GroveR$set("public", "getDependencyGraph", function() {
-  ## TODO return igraph object
-  stop("Not implemented yet")
+  art.names <- sort(artifactNames())
+  num.arts  <- length(art.names)
+  adjm <- matrix(0, nrow = num.arts, ncol = num.arts, dimnames = list(art.names, art.names))
+
+  for(art in art.names) adjm[depNames(art), art] <- 1
+
+  out <- graph_from_adjacency_matrix(adjm)
+  vertex_attr(out, 'isCurrent') <- sapply(art.names, isCurrent)
+  out
+})
+
+GroveR$set("public", "plotDependencyGraph", function(vertex.size = 15) {
+  ig <- getDependencyGraph()
+  convert <- c('red', 'green')
+  vertex_attr(ig, 'color') <- convert[1 * vertex_attr(ig, 'isCurrent') + 1]
+  plot(ig, vertex.size = vertex.size)
 })
 
 GroveR$set("public", "asGraphViz", function() {
