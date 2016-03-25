@@ -96,6 +96,7 @@ GroveR$set("public", "registerStaticFileArtifact", function(name, path, readFun=
 
 GroveR$set("public", "registerImage", function(name, deps, create, path=name, type=c("png", "pdf"), clobber=FALSE, ...) {
   ## TODO: infer 'type' from 'path' if missing
+  ## TODO: does this work with ggplot2?
   stopifnot(length(path)==1)
 
   path <- file.path(private$fileRoot, path)
@@ -128,6 +129,7 @@ GroveR$set("public", "registerImage", function(name, deps, create, path=name, ty
 
 GroveR$set("public", "registerFunction", function(func, funcBody=func, funcName=deparse(substitute(func)),
                                                  path=paste0(funcName, ".rds"), ...) {
+  ## TODO let caller override funcArgs for dependencies
   stopifnot(inherits(funcBody, "function"))
   funcArgs <- names(formals(funcBody))
   self$registerRDSArtifact(funcName, funcArgs, funcBody, path=path, ...)
@@ -151,6 +153,9 @@ GroveR$set("public", "registerFunction", function(func, funcBody=func, funcName=
 ##'   rbind(dep1, dep2) # Or whatever
 ##' }
 ##' App$auto(thingy2)
+##'
+##' ## Or, register a data object
+##' thingy3 %auto% data.frame(x=1:5, y=2:6)
 ##'
 ##' @name set
 GroveR$set("public", "auto", function(what, how=what, name=deparse(substitute(what)), ...) {
