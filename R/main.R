@@ -4,12 +4,35 @@ GroveR <- R6Class(
   "GroveR",
   private = list(
     fileRoot = ".",
-    deps = list(),
-    create = list(),
-    retrieve = list(),
-    checkTime = list(),
-    store = list(),
+    artDefs = list(),
     memCache = list()
+  )
+)
+
+ArtifactDef <- R6Class(
+  public = list(
+    initialize = function(deps, create, retrieve, checkTime, store) {
+      self$deps <- deps
+      self$create <- create
+      self$retrieve <- retrieve
+      self$checkTime <- checkTime
+      self$store <- store
+    },
+
+    deps = character(),
+    create = NULL,
+    retrieve = NULL,
+    checkTime = NULL,
+    store = NULL,
+
+    show = function() {
+      list( deps = self$deps,
+            create = self$create,
+            retrieve = self$retrieve,
+            checkTime = self$checkTime,
+            store = self$store
+      )
+    }
   )
 )
 
@@ -23,13 +46,10 @@ noop <- function(...){}
 GroveR$set("public", "registerArtifact", function(name, deps, create, retrieve, checkTime, store, clobber=FALSE) {
   if (missing(deps) || is.null(deps))
     deps <- character()
-  if (!clobber && name %in% names(private$deps))
+  if (!clobber && name %in% self$artifactNames())
     stop("'", name, "' is already a registered artifact")
-  private$deps[[name]] <- deps
-  private$create[[name]] <- create
-  private$retrieve[[name]] <- retrieve
-  private$checkTime[[name]] <- checkTime
-  private$store[[name]] <- store
+
+  private$artDefs[[name]] <- ArtifactDef$new(deps, create, retrieve, checkTime, store)
   invisible()
 })
 
@@ -152,12 +172,13 @@ GroveR$set("private", "fetchDeps", function(name) {
 
 GroveR$set("public", "depNames", function(name) {
   self$assertArtifactRegistered(name)
-  private$deps[[name]]
+  private$artDefs[[name]]$deps
 })
 
 GroveR$set("private", "runCreate", function(name) {
+  self$assertArtifactRegistered(name)
   flog.info("Generating GroveR artifact '%s'", name)
-  do.call(private$create[[name]], private$fetchDeps(name))
+  do.call(private$artDefs[[name]]$create, private$fetchDeps(name))
 })
 
 ##' @importFrom futile.logger flog.info
@@ -166,11 +187,11 @@ GroveR$set("public", "getArtifact", function(name) {
 
   if (!self$isCurrent(name)) {
     private$memCache[[name]] <- private$runCreate(name)
-    private$store[[name]](private$memCache[[name]])
+    private$artDefs[[name]]$store(private$memCache[[name]])
   }
 
   if (!(name %in% names(private$memCache))) {
-    private$memCache[[name]] <- private$retrieve[[name]]()
+    private$memCache[[name]] <- private$artDefs[[name]]$retrieve()
   }
 
   return(private$memCache[[name]])
@@ -180,11 +201,11 @@ GroveR$set("public", "isCurrent", function(name) {
   self$assertArtifactRegistered(name)
   deps <- self$depNames(name)
 
-  mtime <- private$checkTime[[name]]()
+  mtime <- private$artDefs[[name]]$checkTime()
   if(is.na(mtime)) return(FALSE)
 
   for (n in deps) {
-    if (!self$isCurrent(n) || mtime < private$checkTime[[n]]())
+    if (!self$isCurrent(n) || mtime < private$artDefs[[n]]$checkTime())
       return(FALSE)
   }
 
@@ -192,35 +213,30 @@ GroveR$set("public", "isCurrent", function(name) {
 })
 
 GroveR$set("public", "artifactRegistered", function(name) {
-  name %in% names(private$deps)
+  name %in% self$artifactNames()
 })
 
 GroveR$set("public", "assertArtifactRegistered", function(name) {
   if (!self$artifactRegistered(name)) stop("No such artifact '", name, "'")
 })
 
-
 GroveR$set("public", "artifactNames", function(name) {
-  names(private$deps)
+  names(private$artDefs)
 })
 
 GroveR$set("public", "showArtifact", function(name) {
   self$assertArtifactRegistered(name)
-  list( deps = self$depNames(name),
-        create = private$create[[name]],
-        retrieve = private$retrieve[[name]],
-        checkTime = private$checkTime[[name]],
-        store = private$store[[name]]
-  )
+  private$artDefs[[name]]$show()
 })
 
 GroveR$set("public", "getDependencyGraph", function() {
   ## TODO return igraph object
+  stop("Not implemented yet")
 })
 
 GroveR$set("public", "asGraphViz", function() {
   out <- 'digraph {\n  rankdir=BT;\n  node [style=filled fillcolor="white" color="black"];\n'
-  for(art in names(private$deps)) {
+  for(art in self$artifactNames()) {
     color <- if(self$isCurrent(art)) "green" else "red"
     out <- paste0(out, sprintf('  "%s" [fillcolor=%s];\n', art, color))
     if(length(self$depNames(art)) > 0) {
