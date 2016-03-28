@@ -63,42 +63,42 @@ ArtifactDef <- R6Class(
 .public("registerRDSArtifact", function(name, deps, create, path, ...) {
   path <- file.path(fileRoot, path)
   registerArtifact(name,
-                        deps,
-                        create,
-                        retrieve=function() readRDS(path),
-                        checkTime=function() file.mtime(path),
-                        store=function(object) {
-                          if (!file.exists(dirname(path)))
-                            dir.create(dirname(path), recursive=TRUE)
-                          saveRDS(object, path)
-                        }, ...)
+                   deps,
+                   create,
+                   retrieve=function() readRDS(path),
+                   checkTime=function() file.mtime(path),
+                   store=function(object) {
+                     if (!file.exists(dirname(path)))
+                       dir.create(dirname(path), recursive=TRUE)
+                     saveRDS(object, path)
+                   }, ...)
 })
 
 .public("registerCSVArtifact", function(name, deps, create, path, readFun=read.csv, writeFun=write.csv, ...) {
   path <- file.path(fileRoot, path)
   registerArtifact(name,
-                        deps,
-                        create,
-                        retrieve=function() readFun(path, ...),
-                        checkTime=function() file.mtime(path),
-                        store=function(object) {
-                          if (!file.exists(dirname(path)))
-                            dir.create(dirname(path), recursive=TRUE)
-                          writeFun(object, path)
-                        })
+                   deps,
+                   create,
+                   retrieve=function() readFun(path, ...),
+                   checkTime=function() file.mtime(path),
+                   store=function(object) {
+                     if (!file.exists(dirname(path)))
+                       dir.create(dirname(path), recursive=TRUE)
+                     writeFun(object, path)
+                   })
 })
 
 .public("registerStaticFileArtifact", function(name, path, readFun=readRDS, ...) {
   path <- file.path(fileRoot, path)
   registerArtifact(name,
-                        create=.noop,
-                        retrieve=function() {
-                          if(!file.exists(path))
-                            stop("Can't read '", path, "', no such file")
-                          readFun(path, ...)
-                        },
-                        checkTime=function() file.mtime(path),
-                        store=function(object) stop("Can't write '", name, "', it was declared as static"))
+                   create=.noop,
+                   retrieve=function() {
+                     if(!file.exists(path))
+                       stop("Can't read '", path, "', no such file")
+                     readFun(path, ...)
+                   },
+                   checkTime=function() file.mtime(path),
+                   store=function(object) stop("Can't write '", name, "', it was declared as static"))
 })
 
 .public("registerImage", function(name, deps, create, path=name, type=c("png", "pdf"), clobber=FALSE, ...) {
@@ -121,21 +121,21 @@ ArtifactDef <- R6Class(
   }
 
   registerArtifact(name,
-                        deps,
-                        create=function(...) {
-                          do.call(devFunc, args)
-                          on.exit(dev.off())
-                          args2 <- list(...)
-                          do.call(create, args2)
-                        },
-                        checkTime=function() file.mtime(path),
-                        store=.noop,
-                        clobber=clobber,
-                        retrieve=.noop)
+                   deps,
+                   create=function(...) {
+                     do.call(devFunc, args)
+                     on.exit(dev.off())
+                     args2 <- list(...)
+                     do.call(create, args2)
+                   },
+                   checkTime=function() file.mtime(path),
+                   store=.noop,
+                   clobber=clobber,
+                   retrieve=.noop)
 })
 
 .public("registerFunction", function(func, funcBody=func, funcName=deparse(substitute(func)),
-                                                 path=paste0(funcName, ".rds"), ...) {
+                                     path=paste0(funcName, ".rds"), ...) {
   ## TODO let caller override funcArgs for dependencies
   stopifnot(inherits(funcBody, "function"))
   funcArgs <- names(formals(funcBody))
@@ -170,11 +170,11 @@ ArtifactDef <- R6Class(
     registerFunction(funcName=name, funcBody=how, ...)
   } else {
     registerArtifact(name,
-                          create=.noop,
-                          store=.noop,
-                          retrieve=function() how,
-                          checkTime=function() -Inf,
-                          ...)
+                     create=.noop,
+                     store=.noop,
+                     retrieve=function() how,
+                     checkTime=function() -Inf,
+                     ...)
   }
 })
 
