@@ -209,6 +209,11 @@ ArtifactDef <- R6Class(
   return(memCache[[name]])
 })
 
+.public("getModTime", function(name) {
+  assertArtifactRegistered(name)
+  artDefs[[name]]$checkTime()
+})
+
 .public("isCurrent", function(name) {
   assertArtifactRegistered(name)
   deps <- depNames(name)
@@ -263,7 +268,7 @@ ArtifactDef <- R6Class(
 .public("asGraphViz", function() {
   out <- 'digraph {\n  rankdir=BT;\n  node [style=filled fillcolor="white" color="black"];\n'
   for(art in artifactNames()) {
-    color <- if(isCurrent(art)) "green" else "red"
+    color <- if(isCurrent(art)) "green" else if(!is.na(getModTime(art))) "red" else "white"
     out <- paste0(out, sprintf('  "%s" [fillcolor=%s];\n', art, color))
     if(length(depNames(art)) > 0) {
       deps <- paste0('"', paste(depNames(art), collapse='" "'), '"')
