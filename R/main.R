@@ -38,14 +38,19 @@ ArtifactDef <- R6Class(
   )
 )
 
-GroveR$set("public", "setRoot", function(dir) {
+## Some little helper functions
+.public  <- function(...) GroveR$set("public",  ...)
+.private <- function(...) GroveR$set("private", ...)
+.noop <- function(...){}
+
+
+
+.public("setRoot", function(dir) {
   fileRoot <<- dir
 })
 
-noop <- function(...){}
-
 ## TODO - don't memCache everything?
-GroveR$set("public", "registerArtifact", function(name, deps, create, retrieve, checkTime, store, clobber=FALSE) {
+.public("registerArtifact", function(name, deps, create, retrieve, checkTime, store, clobber=FALSE) {
   if (missing(deps) || is.null(deps))
     deps <- character()
   if (!clobber && name %in% artifactNames())
@@ -55,7 +60,7 @@ GroveR$set("public", "registerArtifact", function(name, deps, create, retrieve, 
   invisible()
 })
 
-GroveR$set("public", "registerRDSArtifact", function(name, deps, create, path, ...) {
+.public("registerRDSArtifact", function(name, deps, create, path, ...) {
   path <- file.path(fileRoot, path)
   registerArtifact(name,
                         deps,
@@ -69,7 +74,7 @@ GroveR$set("public", "registerRDSArtifact", function(name, deps, create, path, .
                         }, ...)
 })
 
-GroveR$set("public", "registerCSVArtifact", function(name, deps, create, path, readFun=read.csv, writeFun=write.csv, ...) {
+.public("registerCSVArtifact", function(name, deps, create, path, readFun=read.csv, writeFun=write.csv, ...) {
   path <- file.path(fileRoot, path)
   registerArtifact(name,
                         deps,
@@ -83,10 +88,10 @@ GroveR$set("public", "registerCSVArtifact", function(name, deps, create, path, r
                         })
 })
 
-GroveR$set("public", "registerStaticFileArtifact", function(name, path, readFun=readRDS, ...) {
+.public("registerStaticFileArtifact", function(name, path, readFun=readRDS, ...) {
   path <- file.path(fileRoot, path)
   registerArtifact(name,
-                        create=noop,
+                        create=.noop,
                         retrieve=function() {
                           if(!file.exists(path))
                             stop("Can't read '", path, "', no such file")
@@ -96,7 +101,7 @@ GroveR$set("public", "registerStaticFileArtifact", function(name, path, readFun=
                         store=function(object) stop("Can't write '", name, "', it was declared as static"))
 })
 
-GroveR$set("public", "registerImage", function(name, deps, create, path=name, type=c("png", "pdf"), clobber=FALSE, ...) {
+.public("registerImage", function(name, deps, create, path=name, type=c("png", "pdf"), clobber=FALSE, ...) {
   ## TODO: infer 'type' from 'path' if missing
   ## TODO: does this work with ggplot2?
   stopifnot(length(path)==1)
@@ -124,12 +129,12 @@ GroveR$set("public", "registerImage", function(name, deps, create, path=name, ty
                           do.call(create, args2)
                         },
                         checkTime=function() file.mtime(path),
-                        store=noop,
+                        store=.noop,
                         clobber=clobber,
-                        retrieve=noop)
+                        retrieve=.noop)
 })
 
-GroveR$set("public", "registerFunction", function(func, funcBody=func, funcName=deparse(substitute(func)),
+.public("registerFunction", function(func, funcBody=func, funcName=deparse(substitute(func)),
                                                  path=paste0(funcName, ".rds"), ...) {
   ## TODO let caller override funcArgs for dependencies
   stopifnot(inherits(funcBody, "function"))
@@ -160,36 +165,36 @@ GroveR$set("public", "registerFunction", function(func, funcBody=func, funcName=
 ##' thingy3 %auto% data.frame(x=1:5, y=2:6)
 ##'
 ##' @name set
-GroveR$set("public", "auto", function(what, how=what, name=deparse(substitute(what)), ...) {
+.public("auto", function(what, how=what, name=deparse(substitute(what)), ...) {
   if(inherits(how, "function")) {
     registerFunction(funcName=name, funcBody=how, ...)
   } else {
     registerArtifact(name,
-                          create=noop,
-                          store=noop,
+                          create=.noop,
+                          store=.noop,
                           retrieve=function() how,
                           checkTime=function() -Inf,
                           ...)
   }
 })
 
-GroveR$set("private", "fetchDeps", function(name) {
+.private("fetchDeps", function(name) {
   lapply(depNames(name), function(n) getArtifact(n))
 })
 
-GroveR$set("public", "depNames", function(name) {
+.public("depNames", function(name) {
   assertArtifactRegistered(name)
   artDefs[[name]]$deps
 })
 
-GroveR$set("private", "runCreate", function(name) {
+.private("runCreate", function(name) {
   assertArtifactRegistered(name)
   flog.info("Generating GroveR artifact '%s'", name)
   do.call(artDefs[[name]]$create, fetchDeps(name))
 })
 
 ##' @importFrom futile.logger flog.info
-GroveR$set("public", "getArtifact", function(name) {
+.public("getArtifact", function(name) {
   assertArtifactRegistered(name)
 
   if (!isCurrent(name)) {
@@ -204,7 +209,7 @@ GroveR$set("public", "getArtifact", function(name) {
   return(memCache[[name]])
 })
 
-GroveR$set("public", "isCurrent", function(name) {
+.public("isCurrent", function(name) {
   assertArtifactRegistered(name)
   deps <- depNames(name)
 
@@ -219,24 +224,24 @@ GroveR$set("public", "isCurrent", function(name) {
   return(TRUE)
 })
 
-GroveR$set("public", "artifactRegistered", function(name) {
+.public("artifactRegistered", function(name) {
   name %in% artifactNames()
 })
 
-GroveR$set("public", "assertArtifactRegistered", function(name) {
+.public("assertArtifactRegistered", function(name) {
   if (!artifactRegistered(name)) stop("No such artifact '", name, "'")
 })
 
-GroveR$set("public", "artifactNames", function(name) {
+.public("artifactNames", function(name) {
   names(artDefs)
 })
 
-GroveR$set("public", "showArtifact", function(name) {
+.public("showArtifact", function(name) {
   assertArtifactRegistered(name)
   artDefs[[name]]$show()
 })
 
-GroveR$set("public", "getDependencyGraph", function() {
+.public("getDependencyGraph", function() {
   art.names <- sort(artifactNames())
   num.arts  <- length(art.names)
   adjm <- matrix(0, nrow = num.arts, ncol = num.arts, dimnames = list(art.names, art.names))
@@ -248,14 +253,14 @@ GroveR$set("public", "getDependencyGraph", function() {
   out
 })
 
-GroveR$set("public", "plotDependencyGraph", function(vertex.size = 15) {
+.public("plotDependencyGraph", function(vertex.size = 15) {
   ig <- getDependencyGraph()
   convert <- c('red', 'green')
   vertex_attr(ig, 'color') <- convert[1 * vertex_attr(ig, 'isCurrent') + 1]
   plot(ig, vertex.size = vertex.size)
 })
 
-GroveR$set("public", "asGraphViz", function() {
+.public("asGraphViz", function() {
   out <- 'digraph {\n  rankdir=BT;\n  node [style=filled fillcolor="white" color="black"];\n'
   for(art in artifactNames()) {
     color <- if(isCurrent(art)) "green" else "red"
