@@ -1,7 +1,7 @@
 ##' @importFrom R6 R6Class
 ##' @export
 GroveR <- R6Class(
-  "GroveR",
+  "GroveR",  ## TODO not really necessary, right?
   portable = FALSE,
   private = list(
     fileRoot = ".",
@@ -11,13 +11,14 @@ GroveR <- R6Class(
 )
 
 ArtifactDef <- R6Class(
+  portable = FALSE,
   public = list(
     initialize = function(deps, create, retrieve, checkTime, store) {
-      self$deps <- deps
-      self$create <- create
-      self$retrieve <- retrieve
-      self$checkTime <- checkTime
-      self$store <- store
+      deps <<- deps
+      create <<- create
+      retrieve <<- retrieve
+      checkTime <<- checkTime
+      store <<- store
     },
 
     deps = character(),
@@ -27,18 +28,18 @@ ArtifactDef <- R6Class(
     store = NULL,
 
     show = function() {
-      list( deps = self$deps,
-            create = self$create,
-            retrieve = self$retrieve,
-            checkTime = self$checkTime,
-            store = self$store
+      list( deps = deps,
+            create = create,
+            retrieve = retrieve,
+            checkTime = checkTime,
+            store = store
       )
     }
   )
 )
 
 GroveR$set("public", "setRoot", function(dir) {
-  private$fileRoot <- dir
+  fileRoot <<- dir
 })
 
 noop <- function(...){}
@@ -47,16 +48,16 @@ noop <- function(...){}
 GroveR$set("public", "registerArtifact", function(name, deps, create, retrieve, checkTime, store, clobber=FALSE) {
   if (missing(deps) || is.null(deps))
     deps <- character()
-  if (!clobber && name %in% self$artifactNames())
+  if (!clobber && name %in% artifactNames())
     stop("'", name, "' is already a registered artifact")
 
-  private$artDefs[[name]] <- ArtifactDef$new(deps, create, retrieve, checkTime, store)
+  artDefs[[name]] <<- ArtifactDef$new(deps, create, retrieve, checkTime, store)
   invisible()
 })
 
 GroveR$set("public", "registerRDSArtifact", function(name, deps, create, path, ...) {
-  path <- file.path(private$fileRoot, path)
-  self$registerArtifact(name,
+  path <- file.path(fileRoot, path)
+  registerArtifact(name,
                         deps,
                         create,
                         retrieve=function() readRDS(path),
@@ -69,8 +70,8 @@ GroveR$set("public", "registerRDSArtifact", function(name, deps, create, path, .
 })
 
 GroveR$set("public", "registerCSVArtifact", function(name, deps, create, path, readFun=read.csv, writeFun=write.csv, ...) {
-  path <- file.path(private$fileRoot, path)
-  self$registerArtifact(name,
+  path <- file.path(fileRoot, path)
+  registerArtifact(name,
                         deps,
                         create,
                         retrieve=function() readFun(path, ...),
@@ -83,8 +84,8 @@ GroveR$set("public", "registerCSVArtifact", function(name, deps, create, path, r
 })
 
 GroveR$set("public", "registerStaticFileArtifact", function(name, path, readFun=readRDS, ...) {
-  path <- file.path(private$fileRoot, path)
-  self$registerArtifact(name,
+  path <- file.path(fileRoot, path)
+  registerArtifact(name,
                         create=noop,
                         retrieve=function() {
                           if(!file.exists(path))
@@ -100,7 +101,7 @@ GroveR$set("public", "registerImage", function(name, deps, create, path=name, ty
   ## TODO: does this work with ggplot2?
   stopifnot(length(path)==1)
 
-  path <- file.path(private$fileRoot, path)
+  path <- file.path(fileRoot, path)
   args <- list(path, ...)
 
   if (missing(type)) {
@@ -114,7 +115,7 @@ GroveR$set("public", "registerImage", function(name, deps, create, path=name, ty
     deps <- names(formals(create))
   }
 
-  self$registerArtifact(name,
+  registerArtifact(name,
                         deps,
                         create=function(...) {
                           do.call(devFunc, args)
@@ -133,7 +134,7 @@ GroveR$set("public", "registerFunction", function(func, funcBody=func, funcName=
   ## TODO let caller override funcArgs for dependencies
   stopifnot(inherits(funcBody, "function"))
   funcArgs <- names(formals(funcBody))
-  self$registerRDSArtifact(funcName, funcArgs, funcBody, path=path, ...)
+  registerRDSArtifact(funcName, funcArgs, funcBody, path=path, ...)
 })
 
 ##' Register a do-what-I-mean artifact
@@ -161,9 +162,9 @@ GroveR$set("public", "registerFunction", function(func, funcBody=func, funcName=
 ##' @name set
 GroveR$set("public", "auto", function(what, how=what, name=deparse(substitute(what)), ...) {
   if(inherits(how, "function")) {
-    self$registerFunction(funcName=name, funcBody=how, ...)
+    registerFunction(funcName=name, funcBody=how, ...)
   } else {
-    self$registerArtifact(name,
+    registerArtifact(name,
                           create=noop,
                           store=noop,
                           retrieve=function() how,
@@ -173,45 +174,45 @@ GroveR$set("public", "auto", function(what, how=what, name=deparse(substitute(wh
 })
 
 GroveR$set("private", "fetchDeps", function(name) {
-  lapply(self$depNames(name), function(n) self$getArtifact(n))
+  lapply(depNames(name), function(n) getArtifact(n))
 })
 
 GroveR$set("public", "depNames", function(name) {
-  self$assertArtifactRegistered(name)
-  private$artDefs[[name]]$deps
+  assertArtifactRegistered(name)
+  artDefs[[name]]$deps
 })
 
 GroveR$set("private", "runCreate", function(name) {
-  self$assertArtifactRegistered(name)
+  assertArtifactRegistered(name)
   flog.info("Generating GroveR artifact '%s'", name)
-  do.call(private$artDefs[[name]]$create, private$fetchDeps(name))
+  do.call(artDefs[[name]]$create, fetchDeps(name))
 })
 
 ##' @importFrom futile.logger flog.info
 GroveR$set("public", "getArtifact", function(name) {
-  self$assertArtifactRegistered(name)
+  assertArtifactRegistered(name)
 
-  if (!self$isCurrent(name)) {
-    private$memCache[[name]] <- private$runCreate(name)
-    private$artDefs[[name]]$store(private$memCache[[name]])
+  if (!isCurrent(name)) {
+    memCache[[name]] <<- runCreate(name)
+    artDefs[[name]]$store(memCache[[name]])
   }
 
-  if (!(name %in% names(private$memCache))) {
-    private$memCache[[name]] <- private$artDefs[[name]]$retrieve()
+  if (!(name %in% names(memCache))) {
+    memCache[[name]] <<- artDefs[[name]]$retrieve()
   }
 
-  return(private$memCache[[name]])
+  return(memCache[[name]])
 })
 
 GroveR$set("public", "isCurrent", function(name) {
-  self$assertArtifactRegistered(name)
-  deps <- self$depNames(name)
+  assertArtifactRegistered(name)
+  deps <- depNames(name)
 
-  mtime <- private$artDefs[[name]]$checkTime()
+  mtime <- artDefs[[name]]$checkTime()
   if(is.na(mtime)) return(FALSE)
 
   for (n in deps) {
-    if (!self$isCurrent(n) || mtime < private$artDefs[[n]]$checkTime())
+    if (!isCurrent(n) || mtime < artDefs[[n]]$checkTime())
       return(FALSE)
   }
 
@@ -219,20 +220,20 @@ GroveR$set("public", "isCurrent", function(name) {
 })
 
 GroveR$set("public", "artifactRegistered", function(name) {
-  name %in% self$artifactNames()
+  name %in% artifactNames()
 })
 
 GroveR$set("public", "assertArtifactRegistered", function(name) {
-  if (!self$artifactRegistered(name)) stop("No such artifact '", name, "'")
+  if (!artifactRegistered(name)) stop("No such artifact '", name, "'")
 })
 
 GroveR$set("public", "artifactNames", function(name) {
-  names(private$artDefs)
+  names(artDefs)
 })
 
 GroveR$set("public", "showArtifact", function(name) {
-  self$assertArtifactRegistered(name)
-  private$artDefs[[name]]$show()
+  assertArtifactRegistered(name)
+  artDefs[[name]]$show()
 })
 
 GroveR$set("public", "getDependencyGraph", function() {
@@ -256,11 +257,11 @@ GroveR$set("public", "plotDependencyGraph", function(vertex.size = 15) {
 
 GroveR$set("public", "asGraphViz", function() {
   out <- 'digraph {\n  rankdir=BT;\n  node [style=filled fillcolor="white" color="black"];\n'
-  for(art in self$artifactNames()) {
-    color <- if(self$isCurrent(art)) "green" else "red"
+  for(art in artifactNames()) {
+    color <- if(isCurrent(art)) "green" else "red"
     out <- paste0(out, sprintf('  "%s" [fillcolor=%s];\n', art, color))
-    if(length(self$depNames(art)) > 0) {
-      deps <- paste0('"', paste(self$depNames(art), collapse='" "'), '"')
+    if(length(depNames(art)) > 0) {
+      deps <- paste0('"', paste(depNames(art), collapse='" "'), '"')
       out <- paste0(out, sprintf('  {%s} -> "%s";\n', deps, art))
     }
   }
