@@ -27,21 +27,21 @@ Using the tools of `GroveR`, that can be transformed to this:
 
 ```
 App <- GroveR$new()
-`%auto%` <- App$auto
+`%createdBy%` <- App$auto
 
-foo %auto% function(bar, baz) {
+foo %createdBy% function(bar, baz) {
   ## create foo stuff here...
 }
 
-bar %auto% function() {
+bar %createdBy% function() {
   ## create bar stuff here...
 }
 
-baz %auto% function() {
+baz %createdBy% function() {
   ## create baz stuff here...
 }
 
-quux %auto% function(baz) {
+quux %createdBy% function(baz) {
   ## create quux stuff here...
 }
 
