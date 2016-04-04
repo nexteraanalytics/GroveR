@@ -8,6 +8,7 @@ License: BSD
 LazyData: TRUE
 Imports:
     R6,
+    futile.logger,
     igraph
 Suggests:
     testthat
