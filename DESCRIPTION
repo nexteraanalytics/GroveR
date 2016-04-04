@@ -12,3 +12,7 @@ Imports:
 Suggests:
     testthat
 RoxygenNote: 5.0.1
+Collate:
+    'objects.R'
+    'methods.R'
+    'register.R'
