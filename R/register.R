@@ -1,5 +1,11 @@
 ##' @include objects.R
+NULL
 
+##' Set the application root directory
+##' @name setRoot
+##' @usage App$setRoot(dir)
+##'
+##' @param dir new value of the root directory
 .public("setRoot", function(dir) {
   fileRoot <<- dir
 })

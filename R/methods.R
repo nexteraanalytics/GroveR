@@ -1,4 +1,5 @@
 ##' @include objects.R
+NULL
 
 .private("fetchDeps", function(name) {
   lapply(depNames(name), function(n) getArtifact(n))
