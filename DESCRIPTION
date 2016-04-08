@@ -3,6 +3,7 @@ Type: Package
 Title: Hierarchical dependency management of objects, a la "make"
 Version: 0.1.0
 Authors@R: person("Ken", "Williams", email = "ken.williams@windlogics.com", role = c("aut", "cre"))
+Copyright: 2016, WindLogics Inc.
 Description: More about what it does (maybe more than one line)
 License: BSD
 LazyData: TRUE

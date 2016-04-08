@@ -1,3 +1,6 @@
+## Copyright (c) 2016 Windlogics, Inc.
+## See the DESCRIPTION file for licensing information.
+
 context("Images")
 
 futile.logger::flog.threshold('WARN')

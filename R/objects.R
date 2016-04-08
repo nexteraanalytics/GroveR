@@ -1,3 +1,6 @@
+## Copyright (c) 2016 Windlogics, Inc.
+## See the DESCRIPTION file for licensing information.
+
 ##' @importFrom R6 R6Class
 ##' @export
 GroveR <- R6Class(

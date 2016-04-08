@@ -58,3 +58,6 @@ As benefits, the application now has:
  * graphical tools to show data dependencies (colors indicate what's up-to-date or not):
 
    ![data dependencies](docs/gv.png)
+
+Copyright (c) 2016 Windlogics, Inc.
+See the DESCRIPTION file for licensing information.
