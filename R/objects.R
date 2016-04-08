@@ -4,7 +4,6 @@
 ##' @importFrom R6 R6Class
 ##' @export
 GroveR <- R6Class(
-  "GroveR",  ## TODO not really necessary, right?
   portable = FALSE,
   private = list(
     fileRoot = ".",
