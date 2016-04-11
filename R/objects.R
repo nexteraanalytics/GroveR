@@ -44,3 +44,8 @@ ArtifactDef <- R6Class(
 .public  <- function(...) GroveR$set("public",  ...)
 .private <- function(...) GroveR$set("private", ...)
 .noop <- function(...){}
+
+## For R 3.1.x compatibility
+if (!exists("dir.exists")) {
+  dir.exists <- function(paths) file.exists(paths) & file.info(paths)$isdir
+}
