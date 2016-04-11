@@ -49,3 +49,6 @@ ArtifactDef <- R6Class(
 if (!exists("dir.exists")) {
   dir.exists <- function(paths) file.exists(paths) & file.info(paths)$isdir
 }
+if (!exists("file.mtime")) {
+  file.mtime <- function(...) file.info(..., extra_cols = FALSE)$mtime
+}
