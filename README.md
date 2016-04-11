@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/focusenergy/GroveR.svg?branch=master)](https://travis-ci.org/focusenergy/GroveR)
+
 GroveR brings [Declarative Programming](https://en.wikipedia.org/wiki/Declarative_programming)
 to data-centered applications.  For example, suppose your code looks like this:
 
