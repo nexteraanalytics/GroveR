@@ -5,16 +5,23 @@ context("Auto interfaces")
 
 futile.logger::flog.threshold('WARN')
 
-test_that("auto interfaces work", {
-  root <- 'foo/bar'
-  toproot <- 'foo'
+root <- 'foo/bar'
+toproot <- 'foo'
 
-  ## Initialize files
+init <- function() {
   if(dir.exists(toproot))
     unlink(toproot, recursive = TRUE)
   if(!dir.exists(root))
     dir.create(root, recursive = TRUE)
-  on.exit(if(dir.exists(toproot)) unlink(toproot, recursive = TRUE))
+}
+cleanup <- function() {
+  if(dir.exists(toproot)) unlink(toproot, recursive = TRUE)
+}
+
+test_that("auto interfaces work", {
+  ## Initialize files
+  init()
+  on.exit(cleanup())
 
   saveRDS(1:9, "foo/bar/scada.met.clearsky.data.rds")
   saveRDS(1:4, "foo/bar/inverter.met.info.rds")
@@ -43,4 +50,10 @@ test_that("auto interfaces work", {
   expect_equal(res$g, 7)
   expect_equal(res$s, 9)
   expect_equal(res$i, 4)
+})
+
+test_that("parametrized auto interfaces work", {
+  App <- GroveR$new()
+  App$setRoot(root)
+  `%createdBy%` <- `%is%` <- App$auto
 })
