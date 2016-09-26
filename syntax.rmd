@@ -1,0 +1,53 @@
+---
+title: "syntax"
+author: "Ken Williams"
+date: "September 25, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Some options for syntax:
+
+```{r, include=FALSE}
+
+```
+
+
+```{r}
+library(GroveR)
+App <- GroveR$new()
+`%createdBy%` <- `%is%` <- App$auto
+
+artifact(x[farm]) + from(y[farm], z[farm]) + using(function(x,y) {
+  ...
+})
+
+App$create(x, using(function(y, z) {
+  ...
+}))
+
+App$create(x[farm], from(y[farm], z[farm]), using(function(y, z) {
+  
+}))
+
+windspeed.model %createdBy% function(ruc, gene) {
+  ...
+}
+
+
+App$create(windspeed.model[farm]) %from%
+  parts(ruc[farm], gene[farm]) %using%
+  function(ruc, gene) {
+    ...
+  }
+
+windspeed.model[farm] %is% boo(ruc[farm], gene[farm], powercurves[farm], {
+  ruc+gene
+})
+```
+
