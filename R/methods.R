@@ -72,6 +72,7 @@ NULL
   artDefs[[name]]$show()
 })
 
+#' @importFrom igraph graph_from_adjacency_matrix vertex_attr<-
 .public("getDependencyGraph", function() {
   art.names <- sort(artifactNames())
   num.arts  <- length(art.names)
@@ -84,6 +85,7 @@ NULL
   out
 })
 
+#' @importFrom igraph vertex_attr<- vertex_attr
 .public("plotDependencyGraph", function(vertex.size = 15) {
   ig <- getDependencyGraph()
   convert <- c('red', 'green')

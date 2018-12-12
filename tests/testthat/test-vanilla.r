@@ -55,4 +55,6 @@ test_that("Vanilla interfaces work", {
 
   ## Catch non-functions early
   expect_error(App$registerFunction(foo, "bar"), "function.*not TRUE")
+
+  graph <- App$getDependencyGraph()
 })

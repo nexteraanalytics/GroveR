@@ -3,3 +3,6 @@
 export(GroveR)
 importFrom(R6,R6Class)
 importFrom(futile.logger,flog.info)
+importFrom(igraph,"vertex_attr<-")
+importFrom(igraph,graph_from_adjacency_matrix)
+importFrom(igraph,vertex_attr)
