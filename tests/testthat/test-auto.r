@@ -1,4 +1,4 @@
-## Copyright (c) 2016 Windlogics, Inc.
+## Copyright (c) 2016-2018 Windlogics, Inc.
 ## See the DESCRIPTION file for licensing information.
 
 context("Auto interfaces")

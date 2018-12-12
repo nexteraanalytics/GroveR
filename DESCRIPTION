@@ -9,7 +9,7 @@ Description: Declarative programming for data-centered applications.  Declare da
   intelligent rebuilding of artifacts when dependencies change; standardized naming of data artifacts
   throughout the application; configurable logging of artifact creation; graphical tools to show
   data dependencies.
-License: MIT
+License: MIT + file LICENSE
 LazyData: TRUE
 Imports:
     R6,
