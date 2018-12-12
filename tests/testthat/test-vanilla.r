@@ -57,4 +57,8 @@ test_that("Vanilla interfaces work", {
   expect_error(App$registerFunction(foo, "bar"), "function.*not TRUE")
 
   graph <- App$getDependencyGraph()
+
+  # TODO better error message when a dependency is an unknown artifact name
+
+
 })
