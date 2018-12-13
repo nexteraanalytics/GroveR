@@ -138,11 +138,18 @@ NULL
 #' @importFrom igraph graph_from_adjacency_matrix vertex_attr<-
 #' @name getDependencyGraph
 .public("getDependencyGraph", function() {
-  art.names <- sort(artifactNames())
+  art.names <- sort(self$artifactNames())
   num.arts  <- length(art.names)
   adjm <- matrix(0, nrow = num.arts, ncol = num.arts, dimnames = list(art.names, art.names))
 
-  for(art in art.names) adjm[depNames(art), art] <- 1
+  for(art in art.names) {
+    deps <- depNames(art)
+    unknowns <- setdiff(deps, art.names)
+    if (length(unknowns) > 0)
+      stop("Unknown artifact '", unknowns[1], "' as dependency of '", art, "'")
+    if (length(deps) > 0)
+      adjm[deps, art] <- 1
+  }
 
   out <- graph_from_adjacency_matrix(adjm)
   vertex_attr(out, 'isCurrent') <- sapply(art.names, isCurrent)

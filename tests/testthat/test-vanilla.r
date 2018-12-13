@@ -56,9 +56,14 @@ test_that("Vanilla interfaces work", {
   ## Catch non-functions early
   expect_error(App$registerFunction(foo, "bar"), "function.*not TRUE")
 
-  graph <- App$getDependencyGraph()
+  expect_silent(
+    App$getDependencyGraph()
+  )
 
-  # TODO better error message when a dependency is an unknown artifact name
-
-
+  # Error message when a dependency is an unknown artifact name
+  App$auto(new_artifact, function(nonexistent_artifact) 123)
+  expect_error(
+    App$getDependencyGraph(),
+    regexp = "Unknown artifact 'nonexistent_artifact' as dependency of 'new_artifact'"
+  )
 })
