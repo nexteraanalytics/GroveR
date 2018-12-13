@@ -108,8 +108,7 @@ NULL
 #' @return the names of all currently registered artifacts
 #'
 #' @name artifactNames
-#' @param name name of the artifact
-.public("artifactNames", function(name) {
+.public("artifactNames", function() {
   names(artDefs)
 })
 
