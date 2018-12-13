@@ -66,4 +66,8 @@ test_that("Vanilla interfaces work", {
     App$getDependencyGraph(),
     regexp = "Unknown artifact 'nonexistent_artifact' as dependency of 'new_artifact'"
   )
+
+  # Make sure artifactInfo() returns some real stuff
+  info <- App$artifactInfo('long.term.projections')
+  expect_equal(info$deps, App$depNames('long.term.projections'))
 })

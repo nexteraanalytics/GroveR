@@ -125,7 +125,7 @@ NULL
 #'   \item{checkTime}{function returning time of artifact creation}
 #'   \item{store}{function to store artifact in cache}
 #' }
-.public("showArtifact", function(name) {
+.public("artifactInfo", function(name) {
   assertArtifactRegistered(name)
   artDefs[[name]]$show()
 })
