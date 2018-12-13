@@ -177,8 +177,7 @@ NULL
 .public("asGraphViz", function() {
   out <- 'digraph {\n  rankdir=BT;\n  node [style=filled fillcolor="white" color="black"];\n'
   for(art in artifactNames()) {
-    color <- if(isCurrent(art)) "green" else if(!is.na(getModTime(art))) "red" else "white"
-    out <- paste0(out, sprintf('  "%s" [fillcolor=%s];\n', art, color))
+    out <- paste0(out, sprintf('  "%s" [fillcolor=%s];\n', art, nodeColor(art)))
     if(length(depNames(art)) > 0) {
       deps <- paste0('"', paste(depNames(art), collapse='" "'), '"')
       out <- paste0(out, sprintf('  {%s} -> "%s";\n', deps, art))
@@ -186,4 +185,8 @@ NULL
   }
   out <- paste0(out, "}\n")
   out
+})
+
+.private("nodeColor", function(name) {
+  if (isCurrent(name)) "green" else if(!is.na(getModTime(name))) "red" else "white"
 })
