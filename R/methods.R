@@ -4,6 +4,7 @@
 ##' @include objects.R
 NULL
 
+# Instantiate all dependencies of artifact `name` and return as a list
 .private("fetchDeps", function(name) {
   lapply(depNames(name), function(n) getArtifact(n))
 })
@@ -18,6 +19,7 @@ NULL
   artDefs[[name]]$deps
 })
 
+# Run the 'create' function for artifact `name`
 .private("runCreate", function(name) {
   assertArtifactRegistered(name)
   flog.info("Generating GroveR artifact '%s'", name)

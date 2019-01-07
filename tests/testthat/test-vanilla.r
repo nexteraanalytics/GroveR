@@ -54,7 +54,7 @@ test_that("Vanilla interfaces work", {
   testthat::expect_equal(res$i, 4)
 
   ## Catch non-functions early
-  expect_error(App$registerFunction(foo, "bar"), "function.*not TRUE")
+  expect_error(App$registerFunction("bar"), "function.*not TRUE")
 
   expect_silent(
     App$getDependencyGraph()
