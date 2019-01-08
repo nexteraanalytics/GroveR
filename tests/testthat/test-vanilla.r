@@ -5,6 +5,20 @@ context("Vanilla interfaces")
 
 futile.logger::flog.threshold('WARN')
 
+
+test_that("Constructor works", {
+  App <- GroveR$new()
+  expect_equal(App$fileRoot, ".")
+
+  App <- GroveR$new(fileRoot = "foo")
+  expect_equal(App$fileRoot, "foo")
+
+  expect_error(GroveR$new(foo = 5), regexp = "Unknown argument 'foo'")
+  expect_error(GroveR$new(5), regexp = "Unknown unnamed argument")
+  expect_error(GroveR$new(foo = 5, 5), regexp = "Unknown argument 'foo'")
+})
+
+
 test_that("Vanilla interfaces work", {
   root <- 'foo/bar'
   toproot <- 'foo'

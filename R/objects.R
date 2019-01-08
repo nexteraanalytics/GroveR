@@ -1,6 +1,23 @@
 ## Copyright (c) 2016-2018 Windlogics, Inc.
 ## See the DESCRIPTION file for licensing information.
 
+.initializer <- function(...) {
+  args <- list(...)
+
+  if (length(args) > 0 && is.null(names(args)))
+    stop("Unknown unnamed argument")
+
+  for (name in names(args)) {
+    if (name %in% names(self))
+      self[[name]] <- args[[name]]
+    else if (is.null(name))
+      stop("Unknown unnamed argument")
+    else
+      stop("Unknown argument '", name, "'")
+  }
+}
+
+
 #' GroveR class object
 #' @section Usage:
 #' \preformatted{
@@ -14,8 +31,11 @@
 #' @export
 GroveR <- R6Class(
   portable = FALSE,
-  private = list(
+  public = list(
     fileRoot = ".",
+    initialize = .initializer
+  ),
+  private = list(
     artDefs = list(),
     memCache = list()
   )
